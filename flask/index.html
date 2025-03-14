@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsão de Qualidade do Vinho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .resultado {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Previsão de Qualidade do Vinho</h2>
+    
+    <form id="wineForm">
+        <label for="fixed_acidity">Fixed Acidity:</label>
+        <input type="number" id="fixed_acidity" step="0.01" required>
+        
+        <label for="volatile_acidity">Volatile Acidity:</label>
+        <input type="number" id="volatile_acidity" step="0.01" required>
+        
+        <label for="citric_acid">Citric Acid:</label>
+        <input type="number" id="citric_acid" step="0.01" required>
+        
+        <label for="residual_sugar">Residual Sugar:</label>
+        <input type="number" id="residual_sugar" step="0.01" required>
+        
+        <label for="chlorides">Chlorides:</label>
+        <input type="number" id="chlorides" step="0.0001" required>
+        
+        <label for="free_sulfur_dioxide">Free Sulfur Dioxide:</label>
+        <input type="number" id="free_sulfur_dioxide" required>
+        
+        <label for="total_sulfur_dioxide">Total Sulfur Dioxide:</label>
+        <input type="number" id="total_sulfur_dioxide" required>
+        
+        <label for="density">Density:</label>
+        <input type="number" id="density" step="0.0001" required>
+        
+        <label for="pH">pH:</label>
+        <input type="number" id="pH" step="0.01" required>
+        
+        <label for="sulphates">Sulphates:</label>
+        <input type="number" id="sulphates" step="0.01" required>
+        
+        <label for="alcohol">Alcohol:</label>
+        <input type="number" id="alcohol" step="0.1" required>
+        
+        <button type="button" onclick="preverQualidade()">Prever Qualidade</button>
+    </form>
+
+    <div class="resultado" id="resultado"></div>
+
+    <script>
+        function preverQualidade() {
+            const dadosVinho = {
+                "fixed_acidity": parseFloat(document.getElementById("fixed_acidity").value),
+                "volatile_acidity": parseFloat(document.getElementById("volatile_acidity").value),
+                "citric_acid": parseFloat(document.getElementById("citric_acid").value),
+                "residual_sugar": parseFloat(document.getElementById("residual_sugar").value),
+                "chlorides": parseFloat(document.getElementById("chlorides").value),
+                "free_sulfur_dioxide": parseFloat(document.getElementById("free_sulfur_dioxide").value),
+                "total_sulfur_dioxide": parseFloat(document.getElementById("total_sulfur_dioxide").value),
+                "density": parseFloat(document.getElementById("density").value),
+                "pH": parseFloat(document.getElementById("pH").value),
+                "sulphates": parseFloat(document.getElementById("sulphates").value),
+                "alcohol": parseFloat(document.getElementById("alcohol").value)
+            };
+
+            fetch("http://127.0.0.1:5000/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(dadosVinho)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultado").innerHTML = 
+                    "Qualidade Prevista: " + data.qualidade_predita + "<br>" +
+                    "Probabilidades: " + JSON.stringify(data.probabilidades);
+            })
+            .catch(error => {
+                document.getElementById("resultado").innerHTML = "Erro na previsão: " + error;
+            });
+        }
+    </script>
+
+</body>
+</html>
